@@ -1553,6 +1553,51 @@ __metadata:
   languageName: node
   linkType: hard
 
+"feature-auth@workspace:packages/feature-auth":
+  version: 0.0.0-use.local
+  resolution: "feature-auth@workspace:packages/feature-auth"
+  dependencies:
+    ui-components: "npm:*"
+    utils: "npm:*"
+  languageName: unknown
+  linkType: soft
+
+"feature-budget@workspace:packages/feature-budget":
+  version: 0.0.0-use.local
+  resolution: "feature-budget@workspace:packages/feature-budget"
+  dependencies:
+    ui-components: "npm:*"
+    utils: "npm:*"
+  languageName: unknown
+  linkType: soft
+
+"feature-expense@workspace:packages/feature-expense":
+  version: 0.0.0-use.local
+  resolution: "feature-expense@workspace:packages/feature-expense"
+  dependencies:
+    ui-components: "npm:*"
+    utils: "npm:*"
+  languageName: unknown
+  linkType: soft
+
+"feature-goals@workspace:packages/feature-goals":
+  version: 0.0.0-use.local
+  resolution: "feature-goals@workspace:packages/feature-goals"
+  dependencies:
+    ui-components: "npm:*"
+    utils: "npm:*"
+  languageName: unknown
+  linkType: soft
+
+"feature-insights@workspace:packages/feature-insights":
+  version: 0.0.0-use.local
+  resolution: "feature-insights@workspace:packages/feature-insights"
+  dependencies:
+    ui-components: "npm:*"
+    utils: "npm:*"
+  languageName: unknown
+  linkType: soft
+
 "file-entry-cache@npm:^8.0.0":
   version: 8.0.0
   resolution: "file-entry-cache@npm:8.0.0"
@@ -3221,6 +3266,12 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ui-components@npm:*, ui-components@workspace:packages/ui-components":
+  version: 0.0.0-use.local
+  resolution: "ui-components@workspace:packages/ui-components"
+  languageName: unknown
+  linkType: soft
+
 "unbox-primitive@npm:^1.1.0":
   version: 1.1.0
   resolution: "unbox-primitive@npm:1.1.0"
@@ -3248,6 +3299,12 @@ __metadata:
   checksum: 10c0/4ef57b45aa820d7ac6496e9208559986c665e49447cb072744c13b66925a362d96dd5a46c4530a6b8e203e5db5fe849369444440cb22ecfc26c679359e5dfa3c
   languageName: node
   linkType: hard
+
+"utils@npm:*, utils@workspace:packages/utils":
+  version: 0.0.0-use.local
+  resolution: "utils@workspace:packages/utils"
+  languageName: unknown
+  linkType: soft
 
 "web@workspace:apps/web":
   version: 0.0.0-use.local
