@@ -29,7 +29,6 @@ export default function ExpenseFeature() {
     <div
       style={{
         backgroundColor: "#f3f4f6",
-        minHeight: "100vh",
         padding: "20px",
       }}
     >
