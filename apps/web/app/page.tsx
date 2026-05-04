@@ -1,6 +1,22 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./lib/firebase";
 
 export default function Home() {
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+    return unsubscribe;
+  }, []);
+
   return (
     <div style={{ textAlign: "center" }}>
       {/* HERO */}
@@ -10,7 +26,9 @@ export default function Home() {
         </h1>
 
         <p style={{ color: "#6b7280", marginTop: "10px" }}>
-          Track expenses, manage budgets, and understand your spending clearly
+          {user
+            ? "Welcome back! Track expenses, manage budgets, and understand your spending."
+            : "Sign up to track expenses, manage budgets, and understand your spending clearly"}
         </p>
       </section>
 
@@ -24,35 +42,52 @@ export default function Home() {
           paddingBottom: "60px",
         }}
       >
-        {/* Expense */}
-        <div style={card}>
-          <h3>💸 Expense Tracker</h3>
-          <p style={text}>Track your daily spending easily</p>
+        {!loading && (
+          <>
+            {user ? (
+              <>
+                {/* Expense */}
+                <div style={card}>
+                  <h3>💸 Expense Tracker</h3>
+                  <p style={text}>Track your daily spending easily</p>
 
-          <Link href="/expense">
-            <button style={button}>Open</button>
-          </Link>
-        </div>
+                  <Link href="/expense">
+                    <button style={button}>Open</button>
+                  </Link>
+                </div>
 
-        {/* Budget */}
-        <div style={card}>
-          <h3>💰 Budget Planner</h3>
-          <p style={text}>Control your monthly budget</p>
+                {/* Budget */}
+                <div style={card}>
+                  <h3>💰 Budget Planner</h3>
+                  <p style={text}>Control your monthly budget</p>
 
-          <Link href="/budget">
-            <button style={button}>Open</button>
-          </Link>
-        </div>
+                  <Link href="/budget">
+                    <button style={button}>Open</button>
+                  </Link>
+                </div>
 
-        {/* Dashboard */}
-        <div style={card}>
-          <h3>📊 Dashboard</h3>
-          <p style={text}>View insights of your finance</p>
+                {/* Dashboard */}
+                <div style={card}>
+                  <h3>📊 Dashboard</h3>
+                  <p style={text}>View insights of your finance</p>
 
-          <Link href="/dashboard">
-            <button style={button}>Open</button>
-          </Link>
-        </div>
+                  <Link href="/dashboard">
+                    <button style={button}>Open</button>
+                  </Link>
+                </div>
+              </>
+            ) : (
+              <div style={card}>
+                <h3>🔐 Get Started</h3>
+                <p style={text}>Create an account to start tracking your finances</p>
+
+                <Link href="/auth">
+                  <button style={button}>Sign Up</button>
+                </Link>
+              </div>
+            )}
+          </>
+        )}
       </section>
     </div>
   );

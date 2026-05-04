@@ -2,6 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./lib/firebase";
 
 export default function RootLayout({
   children,
@@ -9,6 +12,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+    return unsubscribe;
+  }, []);
 
   return (
     <html lang="en">
@@ -36,38 +49,51 @@ export default function RootLayout({
             💼 Finance Tracker
           </h2>
 
-          <nav style={{ display: "flex", gap: "10px" }}>
+          <nav style={{ display: "flex", gap: "10px", alignItems: "center" }}>
             <Link href="/" style={getLinkStyle(pathname === "/")}>
               Home
             </Link>
 
-            <Link
-              href="/expense"
-              style={getLinkStyle(pathname === "/expense")}
-            >
-              Expense
-            </Link>
+            {user && (
+              <>
+                <Link
+                  href="/expense"
+                  style={getLinkStyle(pathname === "/expense")}
+                >
+                  Expense
+                </Link>
 
-            <Link
-              href="/budget"
-              style={getLinkStyle(pathname === "/budget")}
-            >
-              Budget
-            </Link>
+                <Link
+                  href="/budget"
+                  style={getLinkStyle(pathname === "/budget")}
+                >
+                  Budget
+                </Link>
 
-            <Link
-              href="/dashboard"
-              style={getLinkStyle(pathname === "/dashboard")}
-            >
-              Dashboard
-            </Link>
+                <Link
+                  href="/dashboard"
+                  style={getLinkStyle(pathname === "/dashboard")}
+                >
+                  Dashboard
+                </Link>
 
-            <Link
-              href="/currency"
-              style={getLinkStyle(pathname === "/currency")}
-            >
-              Currency
-            </Link>
+                <Link
+                  href="/currency"
+                  style={getLinkStyle(pathname === "/currency")}
+                >
+                  Currency
+                </Link>
+              </>
+            )}
+
+            {!loading && (
+              <Link
+                href="/auth"
+                style={getLinkStyle(pathname === "/auth")}
+              >
+                {user ? "Account" : "Login"}
+              </Link>
+            )}
           </nav>
         </header>
 

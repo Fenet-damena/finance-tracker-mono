@@ -1,8 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { onAuthStateChanged } from "firebase/auth";
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
-import { db } from "../../lib/firebase";
+import { db, auth } from "../../lib/firebase";
 
 type ExpenseItem = {
   amount: number;
@@ -23,10 +25,23 @@ function toUiError(error: unknown): string {
 }
 
 export default function Dashboard() {
+  const router = useRouter();
+  const [user, setUser] = useState<any>(null);
   const [budget, setBudget] = useState(0);
   const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorText, setErrorText] = useState("");
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (!currentUser) {
+        router.push("/auth");
+      } else {
+        setUser(currentUser);
+      }
+    });
+    return unsubscribe;
+  }, [router]);
 
   const loadDashboard = useCallback(async () => {
     setIsLoading(true);
@@ -56,8 +71,14 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    loadDashboard();
-  }, [loadDashboard]);
+    if (user) {
+      loadDashboard();
+    }
+  }, [loadDashboard, user]);
+
+  if (!user) {
+    return null;
+  }
 
   const spent = expenses.reduce((sum, item) => sum + item.amount, 0);
   const remaining = budget - spent;
