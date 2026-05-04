@@ -61,6 +61,13 @@ export default function RootLayout({
             >
               Dashboard
             </Link>
+
+            <Link
+              href="/currency"
+              style={getLinkStyle(pathname === "/currency")}
+            >
+              Currency
+            </Link>
           </nav>
         </header>
 

@@ -1,0 +1,38 @@
+"use client";
+
+import CurrencyFeature from "feature-currency";
+import {
+  ALL_CURRENCY_CODES,
+  DEFAULT_RATES_AS_OF_MS,
+} from "@repo/money";
+
+export default function Page() {
+  const ratesAsOf = new Date(DEFAULT_RATES_AS_OF_MS).toISOString().slice(0, 10);
+
+  return (
+    <div>
+      <div style={appBadgeRow}>
+        <span style={appBadge}>
+          {ALL_CURRENCY_CODES.length} currencies supported &middot; rates as of{" "}
+          {ratesAsOf}
+        </span>
+      </div>
+
+      <CurrencyFeature />
+    </div>
+  );
+}
+
+const appBadgeRow = {
+  display: "flex",
+  justifyContent: "flex-end",
+  padding: "10px 20px 0",
+};
+
+const appBadge = {
+  fontSize: "12px",
+  color: "#374151",
+  backgroundColor: "#e5e7eb",
+  padding: "4px 10px",
+  borderRadius: "999px",
+};

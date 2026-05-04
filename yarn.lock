@@ -1141,6 +1141,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@repo/money@npm:*, @repo/money@workspace:packages/money":
+  version: 0.0.0-use.local
+  resolution: "@repo/money@workspace:packages/money"
+  languageName: unknown
+  linkType: soft
+
 "@repo/typescript-config@npm:*, @repo/typescript-config@workspace:packages/typescript-config":
   version: 0.0.0-use.local
   resolution: "@repo/typescript-config@workspace:packages/typescript-config"
@@ -2871,6 +2877,16 @@ __metadata:
   dependencies:
     ui-components: "npm:*"
     utils: "npm:*"
+  languageName: unknown
+  linkType: soft
+
+"feature-currency@npm:*, feature-currency@workspace:packages/feature-currency":
+  version: 0.0.0-use.local
+  resolution: "feature-currency@workspace:packages/feature-currency"
+  dependencies:
+    "@repo/money": "npm:*"
+    "@repo/ui": "npm:*"
+    "@repo/utils": "npm:*"
   languageName: unknown
   linkType: soft
 
@@ -6583,12 +6599,14 @@ __metadata:
   resolution: "web@workspace:apps/web"
   dependencies:
     "@repo/eslint-config": "npm:*"
+    "@repo/money": "npm:*"
     "@repo/typescript-config": "npm:*"
     "@repo/ui": "npm:*"
     "@types/node": "npm:^22.15.3"
     "@types/react": "npm:19.2.2"
     "@types/react-dom": "npm:19.2.2"
     eslint: "npm:^9.39.1"
+    feature-currency: "npm:*"
     next: "npm:16.2.0"
     react: "npm:^19.2.0"
     react-dom: "npm:^19.2.0"
