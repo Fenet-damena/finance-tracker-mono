@@ -13,6 +13,7 @@
   "dependencies": {
     "@repo/money": "*",
     "@repo/ui": "*",
+    "@repo/reports": "*",
     "feature-currency": "*",
     "feature-goals": "*",
     "feature-insights": "*",
