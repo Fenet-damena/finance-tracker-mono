@@ -91,6 +91,12 @@ export default function RootLayout({
                 >
                   Insights
                 </Link>
+                <Link
+                  href="/reports"
+                  style={getLinkStyle(pathname === "/reports")}
+                >
+                  Reports
+                </Link>
               </>
             )}
 

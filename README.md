@@ -28,7 +28,8 @@ finance-tracker/
 │   ├── utils/              # Shared utility functions
 │   ├── feature-budget/     # Budget feature
 │   ├── feature-expense/    # Expense feature
-│   └── feature-dashboard/  # Dashboard feature
+│   ├── feature-dashboard/  # Dashboard feature
+│   └── feature-reports/    # Reports feature
 │
 ├── package.json
 └── README.md
@@ -87,6 +88,15 @@ Shared helper functions used across features.
   - Total expenses
   - Remaining balance
 - Integrated with Firebase backend
+
+---
+
+### 📊 4. Reports / Analytics (`feature-reports`)
+- **Spending Breakdown**: Visualizes expenses by category using a Pie Chart.
+- **Monthly Trend**: Tracks spending patterns over time with a Bar Chart.
+- **AI Insights**: Generates automated summaries of spending habits.
+- **Modular Design**: Built as a standalone package using `recharts` and shared `utils`.
+
 
 ---
 
