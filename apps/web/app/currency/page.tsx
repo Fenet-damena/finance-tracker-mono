@@ -2,13 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../lib/firebase";
+import { onAuthStateChanged, auth } from "../../lib/auth";
 import CurrencyFeature from "feature-currency";
-import {
-  ALL_CURRENCY_CODES,
-  DEFAULT_RATES_AS_OF_MS,
-} from "@repo/money";
+import { ALL_CURRENCY_CODES, DEFAULT_RATES_AS_OF_MS } from "@repo/money";
 
 export default function Page() {
   const router = useRouter();

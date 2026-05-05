@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "./lib/firebase";
+import { onAuthStateChanged, auth } from "../lib/auth";
 
 export default function RootLayout({
   children,
@@ -45,9 +44,7 @@ export default function RootLayout({
             zIndex: 100,
           }}
         >
-          <h2 style={{ margin: 0, color: "#111827" }}>
-            💼 Finance Tracker
-          </h2>
+          <h2 style={{ margin: 0, color: "#111827" }}>💼 Finance Tracker</h2>
 
           <nav style={{ display: "flex", gap: "10px", alignItems: "center" }}>
             <Link href="/" style={getLinkStyle(pathname === "/")}>
@@ -83,14 +80,22 @@ export default function RootLayout({
                 >
                   Currency
                 </Link>
+
+                <Link href="/goals" style={getLinkStyle(pathname === "/goals")}>
+                  Goals
+                </Link>
+
+                <Link
+                  href="/insights"
+                  style={getLinkStyle(pathname === "/insights")}
+                >
+                  Insights
+                </Link>
               </>
             )}
 
             {!loading && (
-              <Link
-                href="/auth"
-                style={getLinkStyle(pathname === "/auth")}
-              >
+              <Link href="/auth" style={getLinkStyle(pathname === "/auth")}>
                 {user ? "Account" : "Login"}
               </Link>
             )}
@@ -154,6 +159,12 @@ export default function RootLayout({
               </Link>
               <Link href="/dashboard" style={footerLink}>
                 Dashboard
+              </Link>
+              <Link href="/goals" style={footerLink}>
+                Goals
+              </Link>
+              <Link href="/insights" style={footerLink}>
+                Insights
               </Link>
             </div>
 

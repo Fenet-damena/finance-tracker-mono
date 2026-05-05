@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "./lib/firebase";
+import { onAuthStateChanged, auth } from "../lib/auth";
 
 export default function Home() {
   const [user, setUser] = useState<any>(null);
@@ -75,11 +74,33 @@ export default function Home() {
                     <button style={button}>Open</button>
                   </Link>
                 </div>
+
+                <div style={card}>
+                  <h3>🎯 Financial Goals</h3>
+                  <p style={text}>Set savings targets and track progress</p>
+
+                  <Link href="/goals">
+                    <button style={button}>Open</button>
+                  </Link>
+                </div>
+
+                <div style={card}>
+                  <h3>📈 Spending Insights</h3>
+                  <p style={text}>
+                    Analyze monthly cash flow and get recommendations
+                  </p>
+
+                  <Link href="/insights">
+                    <button style={button}>Open</button>
+                  </Link>
+                </div>
               </>
             ) : (
               <div style={card}>
                 <h3>🔐 Get Started</h3>
-                <p style={text}>Create an account to start tracking your finances</p>
+                <p style={text}>
+                  Create an account to start tracking your finances
+                </p>
 
                 <Link href="/auth">
                   <button style={button}>Sign Up</button>
