@@ -79,6 +79,4 @@ Notes on composition
 - Both packages import UI primitives from `@repo/ui` (the `packages/ui-components` package) and `formatCurrency` from `@repo/utils`.
 - The app layer `apps/web/app/*` contains only assembly code (auth checks and imports the package exports) to satisfy the constraint that the `System` directory is for configuration/assembly only.
 
-If you want me to also add a short demo GIF or tests for these features, I can add them next.
-
 — Contribution by Eyu Ashenafi
