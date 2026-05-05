@@ -1,13 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { auth } from "../../apps/web/lib/firebase";
+import { useEffect, useState } from "react";
 import {
+  auth,
   createUserWithEmailAndPassword,
+  onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
-  onAuthStateChanged,
-} from "firebase/auth";
+} from "../../apps/web/lib/auth";
 
 export default function AuthFeature() {
   const [email, setEmail] = useState("");
@@ -101,10 +101,15 @@ export default function AuthFeature() {
           <h3>Welcome, {user.email}!</h3>
           <p style={userEmail}>{user.email}</p>
           <p style={userDetail}>
-            Account created: {new Date(user.metadata.creationTime).toLocaleDateString()}
+            Account created:{" "}
+            {new Date(user.metadata.creationTime).toLocaleDateString()}
           </p>
 
-          <button onClick={handleLogout} style={buttonDanger} disabled={isLoading}>
+          <button
+            onClick={handleLogout}
+            style={buttonDanger}
+            disabled={isLoading}
+          >
             {loadingAction === "logout" ? "Logging out..." : "Logout"}
           </button>
         </div>

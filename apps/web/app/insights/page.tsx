@@ -1,10 +1,11 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import InsightsFeature from "feature-insights";
 import { onAuthStateChanged, auth } from "../../lib/auth";
-import BudgetFeature from "feature-budget";
 
-export default function Page() {
+export default function InsightsPage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -16,8 +17,10 @@ export default function Page() {
       } else {
         setUser(currentUser);
       }
+
       setLoading(false);
     });
+
     return unsubscribe;
   }, [router]);
 
@@ -29,5 +32,5 @@ export default function Page() {
     return null;
   }
 
-  return <BudgetFeature />;
+  return <InsightsFeature />;
 }

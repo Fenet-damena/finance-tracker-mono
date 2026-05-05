@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { onAuthStateChanged } from "firebase/auth";
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
-import { db, auth } from "../../lib/firebase";
+import { db } from "../../lib/firebase";
+import { onAuthStateChanged, auth } from "../../lib/auth";
 
 type ExpenseItem = {
   amount: number;
@@ -88,7 +88,9 @@ export default function Dashboard() {
       <h2 style={{ color: "#111827" }}>📊 Finance Dashboard</h2>
 
       {isLoading ? (
-        <p style={{ color: "#6b7280", fontSize: "13px" }}>Loading dashboard...</p>
+        <p style={{ color: "#6b7280", fontSize: "13px" }}>
+          Loading dashboard...
+        </p>
       ) : null}
 
       {errorText ? (
@@ -99,13 +101,14 @@ export default function Dashboard() {
         <Card title="Budget" value={`$${budget}`} />
         <Card title="Spent" value={`$${spent}`} />
         <Card title="Remaining" value={`$${remaining}`} />
-        <Card title="Status" value={spent > budget ? "Over Budget ⚠️" : "On Track ✅"} />
+        <Card
+          title="Status"
+          value={spent > budget ? "Over Budget ⚠️" : "On Track ✅"}
+        />
       </div>
 
       {spent > budget && budget > 0 && (
-        <div style={warning}>
-          ⚠️ You have exceeded your budget limit!
-        </div>
+        <div style={warning}>⚠️ You have exceeded your budget limit!</div>
       )}
     </div>
   );
