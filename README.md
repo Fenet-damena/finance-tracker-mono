@@ -26,7 +26,9 @@ finance-tracker-mono/
 │   ├── feature-expense/    # Transactional Management
 │   ├── feature-dashboard/  # Data Aggregation & Summary Services
 │   ├── feature-reports/    # Visualization & Analytics Engine
-│   └── feature-goals/      # Financial Planning & Insights
+│   ├── feature-goals/      # Financial Planning & Insights
+│   ├── feature-currency/   # Multi-currency Conversion (Yabets)
+│   └── feature-recurring/  # Recurring Expenses / Subscriptions (Yabets)
 ├── package.json            # Workspace Configuration
 └── README.md               # Technical Documentation
 ```
@@ -67,9 +69,13 @@ finance-tracker-mono/
 *   Authentication: Implemented a robust security layer using Firebase Auth, enabling secure user onboarding and data isolation.
 *   Identity Service: Developed the core authentication flows that underpin the system's security model.
 
-# Yabets Workaferahu |Internationalization
-*   Currency Systems: Built the multi-currency converter system, allowing for real-time exchange rate logic and global usability.
-*   Interface Design: Developed the currency selection interface and the underlying mathematical models for accurate financial conversion.
+# Yabets Workaferahu | Internationalization & Recurring Finance
+*   Currency Systems: Built the multi-currency converter system (`feature-currency`) on top of the new `@repo/money` package, with bundled USD-pivot rates and locale-aware formatting for 12 supported currencies.
+*   Recurring Expenses: Built `feature-recurring`, a subscription / recurring-bill tracker backed by its own `recurringExpenses` Firestore collection, with per-item currency selection, pause/resume, and live monthly + annual totals normalized into any chosen base currency.
+*   Group Package Contributions:
+    *   `@repo/ui`: added `Pill` (status tags) and `EmptyState` (no-items placeholder) primitives.
+    *   `@repo/utils`: added `RECURRING_FREQUENCIES`, `monthlyFromFrequency`, `annualizeAmount`, and `frequencyLabel` — pure helpers reusable by any feature.
+*   Interface Design: Developed both the currency selection interface and the recurring-expense management UI; mathematical models for accurate financial conversion live entirely in `@repo/money` and `@repo/utils` so other features can reuse them.
 
 ---
 

@@ -37,4 +37,77 @@ export function getMonthlyTotals(items) {
     name: month,
     total: map[month]
   }));
-}
+}
+
+/**
+ * Recurring-expense helpers (added with feature-recurring).
+ * Pure functions, framework-free, safe to import from any package.
+ */
+
+export const RECURRING_FREQUENCIES = ["daily", "weekly", "monthly", "yearly"];
+
+/**
+ * Normalize a recurring amount into a monthly figure.
+ * Uses 30 days/month and 365 days/year as standard approximations,
+ * which is the convention used by most consumer subscription tools.
+ * @param {number} amount
+ * @param {"daily"|"weekly"|"monthly"|"yearly"} frequency
+ * @returns {number}
+ */
+export function monthlyFromFrequency(amount, frequency) {
+  const value = Number(amount);
+  if (!Number.isFinite(value)) return 0;
+
+  switch (frequency) {
+    case "daily":
+      return value * 30;
+    case "weekly":
+      return (value * 52) / 12;
+    case "yearly":
+      return value / 12;
+    case "monthly":
+    default:
+      return value;
+  }
+}
+
+/**
+ * Annualized cost of a recurring amount at a given frequency.
+ * @param {number} amount
+ * @param {"daily"|"weekly"|"monthly"|"yearly"} frequency
+ * @returns {number}
+ */
+export function annualizeAmount(amount, frequency) {
+  const value = Number(amount);
+  if (!Number.isFinite(value)) return 0;
+
+  switch (frequency) {
+    case "daily":
+      return value * 365;
+    case "weekly":
+      return value * 52;
+    case "yearly":
+      return value;
+    case "monthly":
+    default:
+      return value * 12;
+  }
+}
+
+/**
+ * Human-readable label for a recurring frequency.
+ * @param {"daily"|"weekly"|"monthly"|"yearly"} frequency
+ */
+export function frequencyLabel(frequency) {
+  switch (frequency) {
+    case "daily":
+      return "Every day";
+    case "weekly":
+      return "Every week";
+    case "yearly":
+      return "Every year";
+    case "monthly":
+    default:
+      return "Every month";
+  }
+}

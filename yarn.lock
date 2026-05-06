@@ -3189,6 +3189,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"feature-recurring@npm:*, feature-recurring@workspace:packages/feature-recurring":
+  version: 0.0.0-use.local
+  resolution: "feature-recurring@workspace:packages/feature-recurring"
+  dependencies:
+    "@repo/money": "npm:*"
+    "@repo/ui": "npm:*"
+    "@repo/utils": "npm:*"
+  languageName: unknown
+  linkType: soft
+
 "file-entry-cache@npm:^8.0.0":
   version: 8.0.0
   resolution: "file-entry-cache@npm:8.0.0"
@@ -7103,6 +7113,7 @@ __metadata:
     feature-currency: "npm:*"
     feature-goals: "npm:*"
     feature-insights: "npm:*"
+    feature-recurring: "npm:*"
     next: "npm:16.2.0"
     react: "npm:^19.2.0"
     react-dom: "npm:^19.2.0"
