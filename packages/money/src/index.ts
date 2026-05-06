@@ -128,3 +128,67 @@ export function formatMoney(money: Money, locale = "en-US"): string {
     return `${symbol}${money.amount.toFixed(fractionDigits)}`;
   }
 }
+
+/**
+ * Add `b` to `a`, expressing the result in `a.currency`. If `b` is in a
+ * different currency it is converted via the supplied rates.
+ *
+ * Useful when a feature aggregates Money values that came from multiple
+ * sources (e.g. a recurring item priced in EUR and another in INR).
+ */
+export function addMoney(
+  a: Money,
+  b: Money,
+  rates: Record<CurrencyCode, number> = DEFAULT_RATES,
+): Money {
+  const converted = convert(b.amount, b.currency, a.currency, rates);
+  return { amount: a.amount + converted, currency: a.currency };
+}
+
+/**
+ * Sum an array of Money values into a single base-currency total.
+ * Empty / non-array input yields `{ amount: 0, currency: baseCurrency }`.
+ *
+ * This is the canonical way for any feature (recurring, insights, reports,
+ * goals) to display a multi-currency total without each rewriting their own
+ * reduce loop.
+ */
+export function sumMoney(
+  monies: readonly Money[],
+  baseCurrency: CurrencyCode,
+  rates: Record<CurrencyCode, number> = DEFAULT_RATES,
+): Money {
+  if (!Array.isArray(monies) || monies.length === 0) {
+    return { amount: 0, currency: baseCurrency };
+  }
+
+  let total = 0;
+  for (const money of monies) {
+    total += convert(money.amount, money.currency, baseCurrency, rates);
+  }
+
+  const minor = CURRENCIES[baseCurrency]?.minorUnitDigits ?? 2;
+  const factor = Math.pow(10, minor);
+  return {
+    amount: Math.round(total * factor) / factor,
+    currency: baseCurrency,
+  };
+}
+
+/**
+ * Comparator that returns -1 / 0 / 1 based on which Money is larger after
+ * normalizing both into `baseCurrency` via the supplied rates. Suitable
+ * for `array.sort(compareMoney)` style usage.
+ */
+export function compareMoney(
+  a: Money,
+  b: Money,
+  baseCurrency: CurrencyCode = "USD",
+  rates: Record<CurrencyCode, number> = DEFAULT_RATES,
+): -1 | 0 | 1 {
+  const aBase = convert(a.amount, a.currency, baseCurrency, rates);
+  const bBase = convert(b.amount, b.currency, baseCurrency, rates);
+  if (aBase < bBase) return -1;
+  if (aBase > bBase) return 1;
+  return 0;
+}

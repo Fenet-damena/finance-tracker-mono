@@ -10,20 +10,32 @@ import {
   serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
-import { Button, Card, EmptyState, Input, Pill } from "@repo/ui";
+import {
+  Banner,
+  Button,
+  Card,
+  EmptyState,
+  Input,
+  Pill,
+  Section,
+  Stack,
+  StatTile,
+} from "@repo/ui";
 import {
   RECURRING_FREQUENCIES,
   annualizeAmount,
   formatCurrency,
   frequencyLabel,
   monthlyFromFrequency,
+  parseNumber,
 } from "@repo/utils";
 import {
   ALL_CURRENCY_CODES,
   CURRENCIES,
   DEFAULT_RATES,
-  convert,
+  compareMoney,
   formatMoney,
+  sumMoney,
 } from "@repo/money";
 import { db } from "../../apps/web/lib/firebase";
 
@@ -65,7 +77,7 @@ export default function RecurringFeature() {
         return {
           id: entry.id,
           name: data.name || "Untitled",
-          amount: Number(data.amount) || 0,
+          amount: parseNumber(data.amount, 0),
           frequency: RECURRING_FREQUENCIES.includes(data.frequency)
             ? data.frequency
             : "monthly",
@@ -90,7 +102,7 @@ export default function RecurringFeature() {
   }, [loadItems]);
 
   const addItem = async () => {
-    const parsedAmount = Number(amount);
+    const parsedAmount = parseNumber(amount, NaN);
 
     if (!name.trim()) {
       setErrorText("Please enter a name (e.g. Netflix, Rent, Gym).");
@@ -172,35 +184,82 @@ export default function RecurringFeature() {
     }
   };
 
-  const totals = useMemo(() => {
-    let monthlyBase = 0;
-    let annualBase = 0;
+  const activeItems = useMemo(
+    () => items.filter((i) => i.status === "active"),
+    [items],
+  );
 
-    for (const item of items) {
-      if (item.status !== "active") continue;
-      const monthlyInItemCurrency = monthlyFromFrequency(item.amount, item.frequency);
-      const annualInItemCurrency = annualizeAmount(item.amount, item.frequency);
+  // Build Money[] arrays once, then let @repo/money do the FX-aware summation.
+  const monthlyMonies = useMemo(
+    () =>
+      activeItems.map((item) => ({
+        amount: monthlyFromFrequency(item.amount, item.frequency),
+        currency: item.currency,
+      })),
+    [activeItems],
+  );
 
-      monthlyBase += convert(monthlyInItemCurrency, item.currency, baseCurrency, DEFAULT_RATES);
-      annualBase += convert(annualInItemCurrency, item.currency, baseCurrency, DEFAULT_RATES);
-    }
+  const annualMonies = useMemo(
+    () =>
+      activeItems.map((item) => ({
+        amount: annualizeAmount(item.amount, item.frequency),
+        currency: item.currency,
+      })),
+    [activeItems],
+  );
 
-    return { monthlyBase, annualBase };
+  const monthlyTotal = useMemo(
+    () => sumMoney(monthlyMonies, baseCurrency, DEFAULT_RATES),
+    [monthlyMonies, baseCurrency],
+  );
+
+  const annualTotal = useMemo(
+    () => sumMoney(annualMonies, baseCurrency, DEFAULT_RATES),
+    [annualMonies, baseCurrency],
+  );
+
+  // Sort displayed items by their monthly cost in base currency, descending.
+  const sortedItems = useMemo(() => {
+    return [...items].sort((a, b) => {
+      const aMonthly = {
+        amount: monthlyFromFrequency(a.amount, a.frequency),
+        currency: a.currency,
+      };
+      const bMonthly = {
+        amount: monthlyFromFrequency(b.amount, b.frequency),
+        currency: b.currency,
+      };
+      return compareMoney(bMonthly, aMonthly, baseCurrency, DEFAULT_RATES);
+    });
   }, [items, baseCurrency]);
 
-  const activeCount = items.filter((i) => i.status === "active").length;
+  const activeCount = activeItems.length;
   const pausedCount = items.length - activeCount;
 
   return (
     <div style={{ backgroundColor: "#f3f4f6", padding: "20px" }}>
       <Card>
-        <h2 style={{ color: "#111827", marginBottom: "5px" }}>
-          🔁 Recurring Expenses
-        </h2>
-        <p style={{ color: "#6b7280", fontSize: "13px", marginTop: 0 }}>
-          Track subscriptions, rent, and any expense that repeats. Mix
-          currencies — totals are normalized to your chosen base currency.
-        </p>
+        <Stack
+          direction="row"
+          justify="space-between"
+          align="flex-start"
+          gap={12}
+          wrap
+        >
+          <div>
+            <h2 style={{ color: "#111827", margin: 0 }}>🔁 Recurring Expenses</h2>
+            <p style={{ color: "#6b7280", fontSize: "13px", marginTop: "4px", marginBottom: 0 }}>
+              Track subscriptions, rent, and any expense that repeats. Mix
+              currencies — totals are normalized into your chosen base
+              currency by <code>@repo/money</code>.
+            </p>
+          </div>
+
+          <Stack direction="row" gap={8} align="center" wrap>
+            <Pill tone="info">{items.length} item{items.length === 1 ? "" : "s"}</Pill>
+            <Button onClick={loadItems}>{isLoading ? "Refreshing..." : "Refresh"}</Button>
+          </Stack>
+        </Stack>
 
         <div style={baseRow}>
           <label style={fieldLabel}>Base currency for totals</label>
@@ -218,147 +277,163 @@ export default function RecurringFeature() {
         </div>
 
         <div style={summaryGrid}>
-          <SummaryTile
+          <StatTile
             label="Active items"
             value={String(activeCount)}
             hint={`${pausedCount} paused`}
           />
-          <SummaryTile
+          <StatTile
             label="Monthly total"
-            value={formatMoney({ amount: totals.monthlyBase, currency: baseCurrency })}
+            value={formatMoney(monthlyTotal)}
             hint={`Across ${activeCount} active item${activeCount === 1 ? "" : "s"}`}
+            tone="info"
           />
-          <SummaryTile
+          <StatTile
             label="Annual total"
-            value={formatMoney({ amount: totals.annualBase, currency: baseCurrency })}
+            value={formatMoney(annualTotal)}
             hint="12 × monthly equivalent"
           />
         </div>
 
-        <h3 style={sectionTitle}>Add a recurring item</h3>
+        <Section
+          title="Add a recurring item"
+          description="Use any supported currency — totals will normalize to your base currency."
+        >
+          <div style={formGrid}>
+            <Input
+              placeholder="Name (e.g. Netflix, Rent, Gym)"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+            />
+            <Input
+              placeholder="Amount"
+              type="number"
+              value={amount}
+              onChange={(event) => setAmount(event.target.value)}
+            />
 
-        <div style={formGrid}>
-          <Input
-            placeholder="Name (e.g. Netflix, Rent, Gym)"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-          />
-          <Input
-            placeholder="Amount"
-            type="number"
-            value={amount}
-            onChange={(event) => setAmount(event.target.value)}
-          />
+            <select
+              value={frequency}
+              onChange={(event) => setFrequency(event.target.value)}
+              style={selectStyle}
+            >
+              {RECURRING_FREQUENCIES.map((opt) => (
+                <option key={opt} value={opt}>
+                  {frequencyLabel(opt)}
+                </option>
+              ))}
+            </select>
 
-          <select
-            value={frequency}
-            onChange={(event) => setFrequency(event.target.value)}
-            style={selectStyle}
-          >
-            {RECURRING_FREQUENCIES.map((opt) => (
-              <option key={opt} value={opt}>
-                {frequencyLabel(opt)}
-              </option>
-            ))}
-          </select>
-
-          <select
-            value={currency}
-            onChange={(event) => setCurrency(event.target.value)}
-            style={selectStyle}
-          >
-            {ALL_CURRENCY_CODES.map((code) => (
-              <option key={code} value={code}>
-                {code} — {CURRENCIES[code].symbol}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div style={{ marginTop: "10px" }}>
-          <Button onClick={addItem}>{isSaving ? "Saving..." : "Add"}</Button>
-        </div>
-
-        {errorText ? <p style={errorTextStyle}>{errorText}</p> : null}
-        {noticeText ? <p style={noticeTextStyle}>{noticeText}</p> : null}
-
-        <h3 style={{ ...sectionTitle, marginTop: "24px" }}>Your recurring items</h3>
-
-        {isLoading ? (
-          <p style={mutedText}>Loading...</p>
-        ) : items.length === 0 ? (
-          <EmptyState
-            title="No recurring items yet"
-            description="Add your first subscription or recurring bill above. It will be saved to Firestore."
-          />
-        ) : (
-          <div style={{ marginTop: "12px", display: "grid", gap: "10px" }}>
-            {items.map((item) => {
-              const monthlyInBase = convert(
-                monthlyFromFrequency(item.amount, item.frequency),
-                item.currency,
-                baseCurrency,
-                DEFAULT_RATES,
-              );
-              const annualInBase = convert(
-                annualizeAmount(item.amount, item.frequency),
-                item.currency,
-                baseCurrency,
-                DEFAULT_RATES,
-              );
-              const isPaused = item.status === "paused";
-
-              return (
-                <div
-                  key={item.id}
-                  style={{
-                    ...rowStyle,
-                    opacity: isPaused ? 0.6 : 1,
-                  }}
-                >
-                  <div style={{ display: "grid", gap: "4px", minWidth: 0 }}>
-                    <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
-                      <strong style={{ color: "#111827" }}>{item.name}</strong>
-                      <Pill tone={isPaused ? "warning" : "success"}>
-                        {isPaused ? "Paused" : "Active"}
-                      </Pill>
-                      <Pill tone="info">{frequencyLabel(item.frequency)}</Pill>
-                    </div>
-                    <span style={mutedText}>
-                      {formatMoney({ amount: item.amount, currency: item.currency })}{" "}
-                      ({item.currency}) · ≈{" "}
-                      {formatMoney({ amount: monthlyInBase, currency: baseCurrency })}{" "}
-                      / month · ≈{" "}
-                      {formatMoney({ amount: annualInBase, currency: baseCurrency })}{" "}
-                      / year
-                    </span>
-                  </div>
-
-                  <div style={actionsCol}>
-                    <button
-                      onClick={() => toggleStatus(item)}
-                      style={secondaryBtn}
-                      disabled={busyId === item.id}
-                    >
-                      {busyId === item.id
-                        ? "..."
-                        : isPaused
-                          ? "Resume"
-                          : "Pause"}
-                    </button>
-                    <button
-                      onClick={() => removeItem(item)}
-                      style={dangerBtn}
-                      disabled={busyId === item.id}
-                    >
-                      {busyId === item.id ? "..." : "Remove"}
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
+            <select
+              value={currency}
+              onChange={(event) => setCurrency(event.target.value)}
+              style={selectStyle}
+            >
+              {ALL_CURRENCY_CODES.map((code) => (
+                <option key={code} value={code}>
+                  {code} — {CURRENCIES[code].symbol}
+                </option>
+              ))}
+            </select>
           </div>
-        )}
+
+          <div style={{ marginTop: "10px" }}>
+            <Button onClick={addItem}>{isSaving ? "Saving..." : "Add"}</Button>
+          </div>
+
+          {errorText ? (
+            <div style={{ marginTop: "12px" }}>
+              <Banner tone="danger">{errorText}</Banner>
+            </div>
+          ) : null}
+          {noticeText ? (
+            <div style={{ marginTop: "12px" }}>
+              <Banner tone="success">{noticeText}</Banner>
+            </div>
+          ) : null}
+        </Section>
+
+        <Section
+          title="Your recurring items"
+          description="Sorted by monthly cost in your base currency."
+        >
+          {isLoading ? (
+            <p style={mutedText}>Loading...</p>
+          ) : sortedItems.length === 0 ? (
+            <EmptyState
+              title="No recurring items yet"
+              description="Add your first subscription or recurring bill above. It will be saved to Firestore."
+            />
+          ) : (
+            <div style={{ display: "grid", gap: "10px" }}>
+              {sortedItems.map((item) => {
+                const monthlyInBase = sumMoney(
+                  [
+                    {
+                      amount: monthlyFromFrequency(item.amount, item.frequency),
+                      currency: item.currency,
+                    },
+                  ],
+                  baseCurrency,
+                  DEFAULT_RATES,
+                );
+                const annualInBase = sumMoney(
+                  [
+                    {
+                      amount: annualizeAmount(item.amount, item.frequency),
+                      currency: item.currency,
+                    },
+                  ],
+                  baseCurrency,
+                  DEFAULT_RATES,
+                );
+                const isPaused = item.status === "paused";
+
+                return (
+                  <div
+                    key={item.id}
+                    style={{
+                      ...rowStyle,
+                      opacity: isPaused ? 0.6 : 1,
+                    }}
+                  >
+                    <div style={{ display: "grid", gap: "4px", minWidth: 0 }}>
+                      <Stack direction="row" gap={8} align="center" wrap>
+                        <strong style={{ color: "#111827" }}>{item.name}</strong>
+                        <Pill tone={isPaused ? "warning" : "success"}>
+                          {isPaused ? "Paused" : "Active"}
+                        </Pill>
+                        <Pill tone="info">{frequencyLabel(item.frequency)}</Pill>
+                      </Stack>
+                      <span style={mutedText}>
+                        {formatMoney({ amount: item.amount, currency: item.currency })}{" "}
+                        ({item.currency}) · ≈ {formatMoney(monthlyInBase)} / month · ≈{" "}
+                        {formatMoney(annualInBase)} / year
+                      </span>
+                    </div>
+
+                    <Stack direction="row" gap={6} align="flex-start">
+                      <button
+                        onClick={() => toggleStatus(item)}
+                        style={secondaryBtn}
+                        disabled={busyId === item.id}
+                      >
+                        {busyId === item.id ? "..." : isPaused ? "Resume" : "Pause"}
+                      </button>
+                      <button
+                        onClick={() => removeItem(item)}
+                        style={dangerBtn}
+                        disabled={busyId === item.id}
+                      >
+                        {busyId === item.id ? "..." : "Remove"}
+                      </button>
+                    </Stack>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </Section>
 
         <details style={legacyDetails}>
           <summary style={legacySummary}>
@@ -366,22 +441,12 @@ export default function RecurringFeature() {
           </summary>
           <p style={legacyBody}>
             <code>formatCurrency</code> from <code>@repo/utils</code> (USD-only)
-            on the monthly total: <strong>{formatCurrency(totals.monthlyBase)}</strong>.
-            For multi-currency display we use{" "}
-            <code>formatMoney</code> from <code>@repo/money</code> instead.
+            on the monthly total: <strong>{formatCurrency(monthlyTotal.amount)}</strong>.
+            For multi-currency display we use <code>formatMoney</code> from{" "}
+            <code>@repo/money</code> instead.
           </p>
         </details>
       </Card>
-    </div>
-  );
-}
-
-function SummaryTile({ label, value, hint }) {
-  return (
-    <div style={summaryCard}>
-      <p style={summaryLabel}>{label}</p>
-      <strong style={summaryValue}>{value}</strong>
-      {hint ? <p style={summaryHint}>{hint}</p> : null}
     </div>
   );
 }
@@ -415,57 +480,11 @@ const summaryGrid = {
   gap: "10px",
 };
 
-const summaryCard = {
-  padding: "12px",
-  backgroundColor: "#f9fafb",
-  border: "1px solid #e5e7eb",
-  borderRadius: "10px",
-};
-
-const summaryLabel = {
-  margin: 0,
-  fontSize: "12px",
-  color: "#6b7280",
-  textTransform: "uppercase",
-  letterSpacing: "0.04em",
-};
-
-const summaryValue = {
-  display: "block",
-  marginTop: "6px",
-  fontSize: "18px",
-  color: "#111827",
-};
-
-const summaryHint = {
-  margin: "4px 0 0",
-  fontSize: "12px",
-  color: "#6b7280",
-};
-
-const sectionTitle = {
-  margin: "20px 0 8px",
-  fontSize: "14px",
-  color: "#111827",
-};
-
 const formGrid = {
   display: "grid",
   gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
   gap: "10px",
   alignItems: "center",
-};
-
-const errorTextStyle = {
-  marginTop: "10px",
-  color: "#991b1b",
-  fontSize: "13px",
-};
-
-const noticeTextStyle = {
-  marginTop: "10px",
-  color: "#065f46",
-  fontSize: "13px",
 };
 
 const mutedText = {
@@ -481,12 +500,6 @@ const rowStyle = {
   border: "1px solid #e5e7eb",
   borderRadius: "10px",
   backgroundColor: "#ffffff",
-};
-
-const actionsCol = {
-  display: "flex",
-  gap: "6px",
-  alignItems: "flex-start",
 };
 
 const secondaryBtn = {

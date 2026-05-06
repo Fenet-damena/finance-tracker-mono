@@ -69,13 +69,11 @@ finance-tracker-mono/
 *   Authentication: Implemented a robust security layer using Firebase Auth, enabling secure user onboarding and data isolation.
 *   Identity Service: Developed the core authentication flows that underpin the system's security model.
 
-# Yabets Workaferahu | Internationalization & Recurring Finance
-*   Currency Systems: Built the multi-currency converter system (`feature-currency`) on top of the new `@repo/money` package, with bundled USD-pivot rates and locale-aware formatting for 12 supported currencies.
-*   Recurring Expenses: Built `feature-recurring`, a subscription / recurring-bill tracker backed by its own `recurringExpenses` Firestore collection, with per-item currency selection, pause/resume, and live monthly + annual totals normalized into any chosen base currency.
-*   Group Package Contributions:
-    *   `@repo/ui`: added `Pill` (status tags) and `EmptyState` (no-items placeholder) primitives.
-    *   `@repo/utils`: added `RECURRING_FREQUENCIES`, `monthlyFromFrequency`, `annualizeAmount`, and `frequencyLabel` — pure helpers reusable by any feature.
-*   Interface Design: Developed both the currency selection interface and the recurring-expense management UI; mathematical models for accurate financial conversion live entirely in `@repo/money` and `@repo/utils` so other features can reuse them.
+# Yabets Workaferahu | *Multi-Currency & Recurring Finance*
+*   Currency System: Built the multi-currency converter and the underlying money library, allowing the entire app to work with 12 supported currencies and live exchange rates.
+*   Recurring Expenses: Designed and built the recurring-expenses feature so users can track subscriptions and bills with pause, resume, and automatic monthly and yearly totals in any chosen currency.
+*   Shared Components: Extended the shared component and utility libraries with reusable building blocks — status pills, progress bars, KPI tiles, empty states, and formatting helpers — for the rest of the team to use.
+*   System Integration: Connected both features into the main app, including navigation, route assembly, and the home dashboard cards.
 
 ---
 
