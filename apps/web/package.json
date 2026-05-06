@@ -12,8 +12,8 @@
   },
   "dependencies": {
     "@repo/money": "*",
-    "@repo/ui": "*",
     "@repo/reports": "*",
+    "@repo/ui": "*",
     "feature-currency": "*",
     "feature-goals": "*",
     "feature-insights": "*",

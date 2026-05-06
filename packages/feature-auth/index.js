@@ -95,19 +95,26 @@ export default function AuthFeature() {
   if (user) {
     return (
       <div style={container}>
-        <h2 style={title}>🔐 Account</h2>
+        <style>{stylesCSS}</style>
+        <div style={card}>
+          <div style={iconHeader}>👤</div>
+          <h2 style={title}>Welcome Back</h2>
+          <p style={subtitle}>Manage your finances with ease</p>
 
-        <div style={userCard}>
-          <h3>Welcome, {user.email}!</h3>
-          <p style={userEmail}>{user.email}</p>
-          <p style={userDetail}>
-            Account created:{" "}
-            {new Date(user.metadata.creationTime).toLocaleDateString()}
-          </p>
+          <div style={userProfile}>
+            <div style={userAvatar}>{user.email.charAt(0).toUpperCase()}</div>
+            <div style={userInfo}>
+              <p style={userEmail}>{user.email}</p>
+              <p style={userDetail}>
+                Active since {new Date(user.metadata.creationTime).toLocaleDateString()}
+              </p>
+            </div>
+          </div>
 
           <button
             onClick={handleLogout}
             style={buttonDanger}
+            className="btn-danger"
             disabled={isLoading}
           >
             {loadingAction === "logout" ? "Logging out..." : "Logout"}
@@ -119,57 +126,72 @@ export default function AuthFeature() {
 
   return (
     <div style={container}>
-      <h2 style={title}>🔐 {isSignup ? "Sign Up" : "Login"}</h2>
+      <style>{stylesCSS}</style>
+      <div style={card}>
+        <div style={iconHeader}>🔐</div>
+        <h2 style={title}>{isSignup ? "Create Account" : "Welcome Back"}</h2>
+        <p style={subtitle}>
+          {isSignup ? "Join our finance community" : "Sign in to your account"}
+        </p>
 
-      <div style={formCard}>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Enter your email"
-          style={input}
-          disabled={isLoading}
-        />
+        <div style={formContainer}>
+          <div style={inputWrapper}>
+            <label style={label}>Email Address</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="name@example.com"
+              style={input}
+              disabled={isLoading}
+            />
+          </div>
 
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Enter your password"
-          style={input}
-          disabled={isLoading}
-        />
+          <div style={inputWrapper}>
+            <label style={label}>Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              style={input}
+              disabled={isLoading}
+            />
+          </div>
 
-        <div style={buttonGroup}>
-          <button
-            onClick={isSignup ? handleSignup : handleLogin}
-            style={button}
-            disabled={isLoading}
-          >
-            {loadingAction === "signup"
-              ? "Creating account..."
-              : loadingAction === "login"
-                ? "Logging in..."
-                : isSignup
-                  ? "Sign Up"
-                  : "Login"}
-          </button>
+          <div style={buttonGroup}>
+            <button
+              onClick={isSignup ? handleSignup : handleLogin}
+              style={buttonPrimary}
+              className="btn-primary"
+              disabled={isLoading}
+            >
+              {loadingAction === "signup"
+                ? "Creating account..."
+                : loadingAction === "login"
+                  ? "Signing in..."
+                  : isSignup
+                    ? "Get Started"
+                    : "Sign In"}
+            </button>
 
-          <button
-            onClick={() => {
-              setIsSignup(!isSignup);
-              setErrorText("");
-              setNoticeText("");
-            }}
-            style={buttonSecondary}
-            disabled={isLoading}
-          >
-            {isSignup ? "Have an account? Login" : "No account? Sign Up"}
-          </button>
+            <button
+              onClick={() => {
+                setIsSignup(!isSignup);
+                setErrorText("");
+                setNoticeText("");
+              }}
+              style={buttonLink}
+              className="btn-link"
+              disabled={isLoading}
+            >
+              {isSignup ? "Already have an account? Sign In" : "Don't have an account? Create one"}
+            </button>
+          </div>
         </div>
 
-        {errorText ? <p style={error}>{errorText}</p> : null}
-        {noticeText ? <p style={notice}>{noticeText}</p> : null}
+        {errorText && <div style={errorBox}>{errorText}</div>}
+        {noticeText && <div style={noticeBox}>{noticeText}</div>}
       </div>
     </div>
   );
@@ -177,136 +199,225 @@ export default function AuthFeature() {
 
 function getErrorMessage(error) {
   const code = error?.code || "";
-  if (code.includes("email-already-in-use")) {
-    return "This email is already registered.";
-  }
-  if (code.includes("invalid-email")) {
-    return "Invalid email address.";
-  }
-  if (code.includes("weak-password")) {
-    return "Password is too weak. Use at least 6 characters.";
-  }
-  if (code.includes("user-not-found")) {
-    return "Email not found. Please sign up.";
-  }
-  if (code.includes("wrong-password")) {
-    return "Incorrect password.";
-  }
-  if (code.includes("too-many-requests")) {
-    return "Too many failed attempts. Try again later.";
-  }
-  return "Authentication failed. Try again.";
+  if (code.includes("email-already-in-use")) return "This email is already registered.";
+  if (code.includes("invalid-email")) return "Invalid email address.";
+  if (code.includes("weak-password")) return "Password is too weak. Use at least 6 characters.";
+  if (code.includes("user-not-found")) return "Account not found. Please sign up.";
+  if (code.includes("wrong-password")) return "Incorrect password.";
+  if (code.includes("too-many-requests")) return "Too many failed attempts. Try again later.";
+  return "Authentication failed. Please try again.";
 }
 
-/* STYLES */
+const stylesCSS = `
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .btn-primary:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+  }
+
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+
+  .btn-danger:hover {
+    background-color: #dc2626 !important;
+    transform: translateY(-1px);
+  }
+
+  .btn-link:hover {
+    color: #4f46e5 !important;
+    text-decoration: underline !important;
+  }
+
+  input:focus {
+    outline: none;
+    border-color: #6366f1 !important;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1) !important;
+  }
+`;
+
 const container = {
-  padding: "20px",
-  fontFamily: "Arial",
-  backgroundColor: "#f9fafb",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
   minHeight: "100vh",
+  padding: "24px",
+  background: "radial-gradient(circle at top right, #1e1b4b, #0f172a)",
+  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+};
+
+const card = {
+  width: "100%",
+  maxWidth: "420px",
+  padding: "40px",
+  backgroundColor: "rgba(255, 255, 255, 0.03)",
+  backdropFilter: "blur(12px)",
+  WebkitBackdropFilter: "blur(12px)",
+  border: "1px solid rgba(255, 255, 255, 0.1)",
+  borderRadius: "24px",
+  boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
+  textAlign: "center",
+  animation: "fadeIn 0.5s ease-out",
+};
+
+const iconHeader = {
+  fontSize: "40px",
+  marginBottom: "16px",
+  display: "inline-block",
+  background: "rgba(255, 255, 255, 0.05)",
+  padding: "12px",
+  borderRadius: "16px",
 };
 
 const title = {
-  color: "#111827",
-  marginBottom: "20px",
+  margin: "0 0 8px 0",
+  fontSize: "28px",
+  fontWeight: "700",
+  color: "#f8fafc",
+  letterSpacing: "-0.025em",
 };
 
-const formCard = {
-  width: "100%",
-  maxWidth: "400px",
-  padding: "20px",
-  backgroundColor: "white",
-  border: "1px solid #e5e7eb",
-  borderRadius: "8px",
-  boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+const subtitle = {
+  margin: "0 0 32px 0",
+  fontSize: "16px",
+  color: "#94a3b8",
 };
 
-const userCard = {
-  width: "100%",
-  maxWidth: "400px",
-  padding: "20px",
-  backgroundColor: "white",
-  border: "1px solid #e5e7eb",
-  borderRadius: "8px",
-  boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+const formContainer = {
+  display: "flex",
+  flexDirection: "column",
+  gap: "20px",
+};
+
+const inputWrapper = {
+  textAlign: "left",
+};
+
+const label = {
+  display: "block",
+  fontSize: "14px",
+  fontWeight: "500",
+  color: "#e2e8f0",
+  marginBottom: "8px",
+  marginLeft: "4px",
 };
 
 const input = {
   width: "100%",
-  padding: "10px",
-  marginBottom: "10px",
-  border: "1px solid #d1d5db",
-  borderRadius: "6px",
+  padding: "12px 16px",
+  backgroundColor: "rgba(255, 255, 255, 0.05)",
+  border: "1px solid rgba(255, 255, 255, 0.1)",
+  borderRadius: "12px",
+  color: "#f8fafc",
+  fontSize: "16px",
+  transition: "all 0.2s ease",
   boxSizing: "border-box",
-  fontSize: "14px",
 };
 
 const buttonGroup = {
   display: "flex",
   flexDirection: "column",
-  gap: "10px",
-  marginTop: "15px",
+  gap: "12px",
+  marginTop: "12px",
 };
 
-const button = {
-  padding: "10px 15px",
-  backgroundColor: "#111827",
+const buttonPrimary = {
+  padding: "14px 24px",
+  background: "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)",
   color: "white",
   border: "none",
-  borderRadius: "6px",
+  borderRadius: "12px",
+  fontSize: "16px",
+  fontWeight: "600",
   cursor: "pointer",
-  fontSize: "14px",
-  fontWeight: "500",
+  transition: "all 0.2s ease",
 };
 
-const buttonSecondary = {
-  padding: "10px 15px",
-  backgroundColor: "#e5e7eb",
-  color: "#111827",
-  border: "1px solid #d1d5db",
-  borderRadius: "6px",
-  cursor: "pointer",
-  fontSize: "14px",
-  fontWeight: "500",
-};
-
-const buttonDanger = {
-  padding: "10px 15px",
-  backgroundColor: "#b91c1c",
-  color: "white",
+const buttonLink = {
+  background: "transparent",
   border: "none",
-  borderRadius: "6px",
-  cursor: "pointer",
+  color: "#94a3b8",
   fontSize: "14px",
-  fontWeight: "500",
+  cursor: "pointer",
+  transition: "all 0.2s ease",
+};
+
+const userProfile = {
+  display: "flex",
+  alignItems: "center",
+  gap: "16px",
+  padding: "16px",
+  backgroundColor: "rgba(255, 255, 255, 0.05)",
+  borderRadius: "16px",
+  marginBottom: "32px",
+  textAlign: "left",
+};
+
+const userAvatar = {
+  width: "48px",
+  height: "48px",
+  borderRadius: "12px",
+  background: "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontSize: "20px",
+  fontWeight: "700",
+  color: "white",
+};
+
+const userInfo = {
+  display: "flex",
+  flexDirection: "column",
 };
 
 const userEmail = {
-  color: "#6b7280",
-  fontSize: "14px",
-  margin: "5px 0",
+  margin: 0,
+  fontSize: "16px",
+  fontWeight: "600",
+  color: "#f8fafc",
 };
 
 const userDetail = {
-  color: "#9ca3af",
-  fontSize: "12px",
-  margin: "5px 0 15px 0",
+  margin: 0,
+  fontSize: "13px",
+  color: "#94a3b8",
 };
 
-const error = {
-  marginTop: "12px",
-  color: "#991b1b",
-  fontSize: "13px",
-  padding: "10px",
-  backgroundColor: "#fee2e2",
-  borderRadius: "6px",
+const buttonDanger = {
+  width: "100%",
+  padding: "12px",
+  backgroundColor: "#ef4444",
+  color: "white",
+  border: "none",
+  borderRadius: "12px",
+  fontSize: "15px",
+  fontWeight: "600",
+  cursor: "pointer",
+  transition: "all 0.2s ease",
 };
 
-const notice = {
-  marginTop: "12px",
-  color: "#065f46",
-  fontSize: "13px",
-  padding: "10px",
-  backgroundColor: "#dcfce7",
-  borderRadius: "6px",
+const errorBox = {
+  marginTop: "20px",
+  padding: "12px 16px",
+  backgroundColor: "rgba(239, 68, 68, 0.1)",
+  border: "1px solid rgba(239, 68, 68, 0.2)",
+  borderRadius: "12px",
+  color: "#fca5a5",
+  fontSize: "14px",
+};
+
+const noticeBox = {
+  marginTop: "20px",
+  padding: "12px 16px",
+  backgroundColor: "rgba(16, 185, 129, 0.1)",
+  border: "1px solid rgba(16, 185, 129, 0.2)",
+  borderRadius: "12px",
+  color: "#6ee7b7",
+  fontSize: "14px",
 };
