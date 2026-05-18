@@ -26,7 +26,9 @@ finance-tracker-mono/
 │   ├── feature-expense/    # Transactional Management
 │   ├── feature-dashboard/  # Data Aggregation & Summary Services
 │   ├── feature-reports/    # Visualization & Analytics Engine
-│   └── feature-goals/      # Financial Planning & Insights
+│   ├── feature-goals/      # Financial Planning & Insights
+│   ├── feature-currency/   # Multi-currency Conversion (Yabets)
+│   └── feature-recurring/  # Recurring Expenses / Subscriptions (Yabets)
 ├── package.json            # Workspace Configuration
 └── README.md               # Technical Documentation
 ```
@@ -58,7 +60,11 @@ Project Coordination: Handled the initial repo setup, resolved structural merge 
 # Sumaya Adem | Analytics & Visualization
 Reports Module: Built the independent feature-reports package to isolate the application's data analysis logic.
 
-Visualization Components: Developed the SpendingBreakdown (categorical charts) and SavingsTrend (temporal trends) UI components using charting libraries.
+# Yabets Workaferahu | *Multi-Currency & Recurring Finance*
+*   Currency System: Built the multi-currency converter and the underlying money library, allowing the entire app to work with 12 supported currencies and live exchange rates.
+*   Recurring Expenses: Designed and built the recurring-expenses feature so users can track subscriptions and bills with pause, resume, and automatic monthly and yearly totals in any chosen currency.
+*   Shared Components: Extended the shared component and utility libraries with reusable building blocks — status pills, progress bars, KPI tiles, empty states, and formatting helpers — for the rest of the team to use.
+*   System Integration: Connected both features into the main app, including navigation, route assembly, and the home dashboard cards.
 
 Routing & Integration: Integrated the ReportDashboard component into the main application layout with optimized navigation routes.
 

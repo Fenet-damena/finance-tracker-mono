@@ -97,6 +97,12 @@ export default function RootLayout({
                 >
                   Reports
                 </Link>
+                <Link
+                  href="/recurring"
+                  style={getLinkStyle(pathname === "/recurring")}
+                >
+                  Recurring
+                </Link>
               </>
             )}
 
@@ -171,6 +177,9 @@ export default function RootLayout({
               </Link>
               <Link href="/insights" style={footerLink}>
                 Insights
+              </Link>
+              <Link href="/recurring" style={footerLink}>
+                Recurring
               </Link>
             </div>
 

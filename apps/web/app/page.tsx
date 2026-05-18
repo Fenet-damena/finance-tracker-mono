@@ -94,6 +94,17 @@ export default function Home() {
                     <button style={button}>Open</button>
                   </Link>
                 </div>
+
+                <div style={card}>
+                  <h3>🔁 Recurring Expenses</h3>
+                  <p style={text}>
+                    Track subscriptions and bills with multi-currency totals
+                  </p>
+
+                  <Link href="/recurring">
+                    <button style={button}>Open</button>
+                  </Link>
+                </div>
               </>
             ) : (
               <div style={card}>

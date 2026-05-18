@@ -1,0 +1,11 @@
+{
+  "name": "feature-recurring",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "dependencies": {
+    "@repo/money": "*",
+    "@repo/ui": "*",
+    "@repo/utils": "*"
+  }
+}
