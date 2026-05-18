@@ -46,7 +46,7 @@ finance-tracker-mono/
 ---
 
 # Team Roles
-# Fenet-damena | System Architect
+# Fenet-damena | System Architect & Core Infrastructure
 Workspace Setup: Configured the Turborepo workspace environment and package structure to manage our modular codebase.
 
 Shared Components: Created the foundational shared packages (ui-components and utils) utilized by the rest of the team.
@@ -60,11 +60,7 @@ Project Coordination: Handled the initial repo setup, resolved structural merge 
 # Sumaya Adem | Analytics & Visualization
 Reports Module: Built the independent feature-reports package to isolate the application's data analysis logic.
 
-# Yabets Workaferahu | *Multi-Currency & Recurring Finance*
-*   Currency System: Built the multi-currency converter and the underlying money library, allowing the entire app to work with 12 supported currencies and live exchange rates.
-*   Recurring Expenses: Designed and built the recurring-expenses feature so users can track subscriptions and bills with pause, resume, and automatic monthly and yearly totals in any chosen currency.
-*   Shared Components: Extended the shared component and utility libraries with reusable building blocks — status pills, progress bars, KPI tiles, empty states, and formatting helpers — for the rest of the team to use.
-*   System Integration: Connected both features into the main app, including navigation, route assembly, and the home dashboard cards.
+Visualization Components: Developed the SpendingBreakdown (categorical charts) and SavingsTrend (temporal trends) UI components using charting libraries.
 
 Routing & Integration: Integrated the ReportDashboard component into the main application layout with optimized navigation routes.
 
