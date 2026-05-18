@@ -44,33 +44,50 @@ finance-tracker-mono/
 ---
 
 # Team Roles
+# Fenet-damena | System Architect
+Workspace Setup: Configured the Turborepo workspace environment and package structure to manage our modular codebase.
 
-# Fenet-damena | System Architect & Core Infrastructure*
-*   Environment Design: set the entire Turborepo environment, configuring workspace protocols and Yarn PnP for optimal development workflow.
-*   Core Logic: Established foundational shared packages including `ui-components` and `utils`.
-*   Full-Stack Integration: Engineered the connection between the Budget, Expenses, and Dashboard modules with the Firebase backend.
-*   Project Oversight: Handled initial repository commits, resolved structural merge conflicts, and finalized the budget system implementation.
+Shared Components: Created the foundational shared packages (ui-components and utils) utilized by the rest of the team.
 
+Core Trackers: Developed the primary Budget Tracker and Expense Tracker modules, defining their core logic and state.
 
-# sumaya Adem | Analytics & Visualization
-*   Feature Implementation: Architected the `feature-reports` package, establishing the foundation for data-driven insights.
-*   Visualization: Developed the `SpendingBreakdown` (Categorical Analysis) and `SavingsTrend` (Temporal Trends) components using advanced charting libraries.
-*   Integration: Facilitated the seamless integration of the ReportDashboard into the primary web application, including navigation schema and route optimization.
-*   Infrastructure: Managed the initial setup of analytics utilities and maintained repository synchronization through complex merge operations.
+Database Integration: Connected the frontend modules (Budget, Expenses, and Dashboard) to the Firebase backend.
 
-# Eyu Ashenafi | 
-*   Feature Development: Conceptualized and implemented the Financial Goals and Insights modules, providing users with actionable financial intelligence.
-*   Documentation: Authored the technical specification for the Financial Goals feature (`FINANCIAL_GOAL_FEATURE.md`), ensuring high documentation standards.
-*   Code Quality: Led refactoring initiatives for authentication handling to improve logic flow and security.
+Project Coordination: Handled the initial repo setup, resolved structural merge conflicts, and finalized the core tracker integrations.
 
-#### Yafet Tesfaye | *Security Engineer: Identity Management*
-*   Authentication: Implemented a robust security layer using Firebase Auth, enabling secure user onboarding and data isolation.
-*   Identity Service: Developed the core authentication flows that underpin the system's security model.
+# Sumaya Adem | Analytics & Visualization
+Reports Module: Built the independent feature-reports package to isolate the application's data analysis logic.
 
-# Yabets Workaferahu |Internationalization
-*   Currency Systems: Built the multi-currency converter system, allowing for real-time exchange rate logic and global usability.
-*   Interface Design: Developed the currency selection interface and the underlying mathematical models for accurate financial conversion.
+Visualization Components: Developed the SpendingBreakdown (categorical charts) and SavingsTrend (temporal trends) UI components using charting libraries.
 
+Routing & Integration: Integrated the ReportDashboard component into the main application layout with optimized navigation routes.
+
+Module Maintenance: Set up localized analytics utilities and assisted with repository syncing during feature merges.
+
+# Eyu Ashenafi | Financial Goals & Insights
+Feature Modules: Designed and implemented the Financial Goals and Insights components to give users automated feedback on their spending habit trends.
+
+Component Documentation: Authored the technical markdown specification for the goals feature (FINANCIAL_GOAL_FEATURE.md) to map out its component design.
+
+Code Refactoring: Led code clean-up initiatives for the authentication components to improve project structure and security flow.
+
+# Yafet Tesfaye | Identity Management & Route Protection
+Authentication Component: Developed the standalone feature-auth package using Firebase Auth to handle sign-up, login, and logout flows with error handling.
+
+Route Guards: Implemented secure route checks across the budget, expense, dashboard, and currency views to restrict access to authenticated users.
+
+Conditional Navigation: Updated the main layout components so that navigation menus dynamically adapt based on whether a user is signed in.
+
+User Profile View: Shipped the account interface component where users can view their session details and safely sign out.
+
+# Yabets Workaferahu | Multi-Currency & Recurring Finance
+Currency Component: Built a reusable money library and multi-currency converter module supporting 12 currencies with live exchange rates.
+
+Recurring Finance Module: Designed and implemented the recurring-expenses feature component to track subscriptions with pause/resume states.
+
+Shared Primitives: Expanded the team's shared library with reusable UI elements like status pills, progress bars, and KPI tiles.
+
+Dashboard Wiring: Connected the currency and recurring expense features into the main dashboard layout and navigation paths.
 ---
 
 # Getting Started
